@@ -34,6 +34,37 @@ class ProfileCreationControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(201, $response->getStatusCode(), $response->getContent());
     }
 
+    public function testItFailsIfNameIsMissing()
+    {
+        $headers = array(
+            'CONTENT_TYPE' => 'application/json',
+            'PHP_AUTH_USER' => 'spanish_inquisition',
+            'PHP_AUTH_PW' => 'NobodyExpectsIt!',
+        );
+        $body = json_encode(array('no-name' => ''));
+        $request = Request::create('/api/v1/profiles', 'POST', array(), array(), array(), $headers, $body);
+
+        $response = $this->app->handle($request);
+
+        $this->assertSame(422, $response->getStatusCode(), $response->getContent());
+    }
+
+    public function testItFailsIfNameAlreadyExists()
+    {
+        $headers = array(
+            'CONTENT_TYPE' => 'application/json',
+            'PHP_AUTH_USER' => 'spanish_inquisition',
+            'PHP_AUTH_PW' => 'NobodyExpectsIt!',
+        );
+        $body = json_encode(array('name' => 'Provençal le Gaulois'));
+        $request = Request::create('/api/v1/profiles', 'POST', array(), array(), array(), $headers, $body);
+
+        $this->app->handle($request);
+        $response = $this->app->handle($request);
+
+        $this->assertSame(422, $response->getStatusCode(), $response->getContent());
+    }
+
     protected function tearDown()
     {
         $this->em->rollback();

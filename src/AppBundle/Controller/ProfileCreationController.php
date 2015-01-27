@@ -20,7 +20,14 @@ class ProfileCreationController extends Controller
     {
         $em = $this->get('doctrine.orm.entity_manager');
 
-        $createdProfile = new Profile($request->request->get('name'));
+        $name = $request->request->get('name');
+        if (null === $name) {
+            return new JsonResponse(array('error' => 'The "name" parameter is missing from the request\'s body'), 422);
+        }
+        if (null !== $em->getRepository('AppBundle:Profile')->findOneByName($name)) {
+            return new JsonResponse(array('error' => 'The name "'.$name.'" is already taken'), 422);
+        }
+        $createdProfile = new Profile($name);
         $em->persist($createdProfile);
         $em->flush();
 
