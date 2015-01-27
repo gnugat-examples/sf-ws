@@ -3,6 +3,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Profile;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,9 +18,12 @@ class ProfileCreationController extends Controller
      */
     public function createProfileAction(Request $request)
     {
-        $name = $request->request->get('name');
-        $createdProfile = array();
+        $em = $this->get('doctrine.orm.entity_manager');
 
-        return new JsonResponse($createdProfile, 201);
+        $createdProfile = new Profile($request->request->get('name'));
+        $em->persist($createdProfile);
+        $em->flush();
+
+        return new JsonResponse($createdProfile->toArray(), 201);
     }
 }

@@ -8,11 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 class ProfileCreationControllerTest extends \PHPUnit_Framework_TestCase
 {
     private $app;
+    private $em;
 
     protected function setUp()
     {
-        $this->app = new \AppKernel('test', false);
+        $this->app = new \AppKernel('test', true);
         $this->app->boot();
+
+        $this->em = $this->app->getContainer()->get('doctrine.orm.entity_manager');
+        $this->em->beginTransaction();
     }
 
     public function testItCreatesProfiles()
@@ -28,5 +32,11 @@ class ProfileCreationControllerTest extends \PHPUnit_Framework_TestCase
         $response = $this->app->handle($request);
 
         $this->assertSame(201, $response->getStatusCode(), $response->getContent());
+    }
+
+    protected function tearDown()
+    {
+        $this->em->rollback();
+        $this->em->close();
     }
 }
