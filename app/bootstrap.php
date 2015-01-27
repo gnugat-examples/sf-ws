@@ -1,3 +1,4 @@
+<?php
 // File: app/bootstrap.php
 
 require __DIR__.'/bootstrap.php.cache';
