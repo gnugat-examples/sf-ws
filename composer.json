@@ -21,7 +21,9 @@
         "sensio/distribution-bundle": "~3.0.12",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
-        "phpspec/phpspec": "~2.1"
+        "phpspec/phpspec": "~2.1",
+        "simple-bus/symfony-bridge": "~3.0",
+        "simple-bus/doctrine-orm-bridge": "~3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
