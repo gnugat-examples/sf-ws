@@ -26,4 +26,13 @@ class CreateProfileHandlerSpec extends ObjectBehavior
 
         $this->handle(new CreateProfile(self::NAME));
     }
+
+    function it_cannot_create_the_profile_if_the_name_has_already_been_registered(ProfileRepository $profileRepository)
+    {
+        $profile = Argument::type('AppBundle\Entity\Profile');
+        $profileRepository->findOneBy(array('name' => self::NAME))->willReturn($profile);
+
+        $domainException = '\DomainException';
+        $this->shouldThrow($domainException)->duringHandle(new CreateProfile(self::NAME));
+    }
 }

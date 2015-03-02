@@ -23,6 +23,9 @@ class CreateProfileHandler implements MessageHandler
     public function handle(Message $message)
     {
         $profile = $this->profileRepository->findOneBy(array('name' => $message->name));
+        if (null !== $profile) {
+            throw new \DomainException(sprintf('The name "%s" is already taken', $message->name));
+        }
         $newProfile = new Profile($message->name);
         $this->objectManager->persist($newProfile);
     }
