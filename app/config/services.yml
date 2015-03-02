@@ -14,3 +14,17 @@ services:
         class: AppBundle\EventListener\DomainExceptionListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 10 }
+
+    app.profile_repository:
+        class: AppBundle\Entity\ProfileRepository
+        factory_service: doctrine.orm.default_entity_manager
+        factory_method: getRepository
+        arguments: ['AppBundle:Profile']
+
+    app.create_profile_handler:
+        class: AppBundle\CommandBus\CreateProfileHandler
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@app.profile_repository"
+        tags:
+            - { name: command_handler, handles: AppBundle\CommandBus\CreateProfile }

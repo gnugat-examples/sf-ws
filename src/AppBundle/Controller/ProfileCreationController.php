@@ -3,7 +3,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Profile;
+use AppBundle\CommandBus\CreateProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,18 +18,10 @@ class ProfileCreationController extends Controller
      */
     public function createProfileAction(Request $request)
     {
-        $em = $this->get('doctrine.orm.entity_manager');
-
         $name = $request->request->get('name');
-        if (null === $name) {
-            return new JsonResponse(array('error' => 'The "name" parameter is missing from the request\'s body'), 422);
-        }
-        if (null !== $em->getRepository('AppBundle:Profile')->findOneByName($name)) {
-            return new JsonResponse(array('error' => 'The name "'.$name.'" is already taken'), 422);
-        }
-        $createdProfile = new Profile($name);
-        $em->persist($createdProfile);
-        $em->flush();
+
+        $this->get('command_bus')->handle(new CreateProfile($name));
+        $createdProfile = $this->get('app.profile_repository')->findOneBy(array('name' => $name));
 
         return new JsonResponse($createdProfile->toArray(), 201);
     }
